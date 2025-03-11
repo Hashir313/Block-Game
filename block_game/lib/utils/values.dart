@@ -28,3 +28,20 @@ const Map<Tetromino, Color> tetrominoColors = {
   Tetromino.Z: Color(0xFFFF0000), // Red
   Tetromino.T: Color.fromARGB(255, 144, 0, 255), // Purple
 };
+
+enum GameTheme { space, wooden, classic } // Wooden theme added
+
+Map<GameTheme, Map<String, String>> themeBackgrounds = {
+  GameTheme.space: {
+    'background':
+        'assets/images/classic_background.jpg', // Space background image path
+  },
+  GameTheme.wooden: {
+    'background':
+        'assets/images/space_background.jpg', // Wooden texture background image path
+  },
+  GameTheme.classic: {
+    'background':
+        'assets/images/wooden_texture_block.jpg', // Classic background image path
+  },
+};

@@ -45,6 +45,7 @@ class _GameBoardState extends State<GameBoard> {
   // Explosion flag to show the explosion on line clear
   bool showExplosion = false;
   Offset explosionPosition = Offset(0, 0); // Position of the explosion
+  GameTheme currentTheme = GameTheme.classic; // Default theme
 
   @override
   void initState() {
@@ -288,72 +289,101 @@ class _GameBoardState extends State<GameBoard> {
     super.dispose();
   }
 
+  /*AppBar(
+          actions: [
+            IconButton(
+                onPressed: () {
+                  showThemeSelectionDialog(context);
+                },
+                icon: Icon(Icons.dark_mode))
+          ],
+        ),*/
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: Color(0xFF8B8680),
         body: Stack(
           children: [
-            Column(
-              children: [
-                // GAME BOARD
-                Expanded(
-                  child: GridView.builder(
-                    itemCount: rowLength * colLength,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: rowLength,
-                    ),
-                    itemBuilder: (context, index) {
-                      int row = (index / rowLength).floor();
-                      int col = index % rowLength;
-                      if (currentPiece.position.contains(index)) {
-                        return Pixel(
-                          color: currentPiece.color,
-                        );
-                      } else if (gameBoard[row][col] != null) {
-                        final Tetromino? tetrominoType = gameBoard[row][col];
-                        return Pixel(
-                          color: tetrominoColors[tetrominoType],
-                        );
-                      } else {
-                        return Pixel(
-                          color: Colors.grey[900],
-                        );
-                      }
-                    },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.05,
                   ),
-                ),
+                  Text(
+                    'Score: ${currentScore.toString()}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.only(
+                          top: MediaQuery.sizeOf(context).height * 0.02),
+                      alignment: Alignment.center,
+                      child: GridView.builder(
+                        itemCount: rowLength * colLength,
+                        physics: NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: rowLength,
+                        ),
+                        itemBuilder: (context, index) {
+                          int row = (index / rowLength).floor();
+                          int col = index % rowLength;
 
-                // SCORE
-                Text(
-                  'Score: ${currentScore.toString()}',
-                  style: TextStyle(color: Colors.white),
-                ),
-
-                // GAME CONTROLS
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 50.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(
+                          if (currentPiece.position.contains(index)) {
+                            return Pixel(
+                              color: currentPiece.color, // Block ka color
+                            );
+                          } else if (gameBoard[row][col] != null) {
+                            final Tetromino? tetrominoType =
+                                gameBoard[row][col];
+                            return Pixel(
+                              color: tetrominoColors[
+                                  tetrominoType], // Agar block hai toh uska color dikhao
+                            );
+                          } else {
+                            return Pixel(
+                              color:
+                                  null, // Empty block pe wooden texture show hoga
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 50.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
                           onPressed: moveLeft,
                           color: Colors.white,
-                          icon: Icon(Icons.arrow_back_ios)),
-                      IconButton(
+                          icon: Icon(Icons.arrow_back_ios),
+                        ),
+                        IconButton(
                           onPressed: rotatePiece,
                           color: Colors.white,
-                          icon: Icon(Icons.rotate_right)),
-                      IconButton(
+                          icon: Icon(Icons.rotate_right),
+                        ),
+                        IconButton(
                           onPressed: moveRight,
                           color: Colors.white,
-                          icon: Icon(Icons.arrow_forward_ios)),
-                    ],
+                          icon: Icon(Icons.arrow_forward_ios),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             if (showExplosion)
               Align(
@@ -363,6 +393,46 @@ class _GameBoardState extends State<GameBoard> {
           ],
         ),
       ),
+    );
+  }
+
+  void showThemeSelectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Select Theme'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  currentTheme = GameTheme.space;
+                });
+                Navigator.of(context).pop();
+              },
+              child: Text('Space Theme'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  currentTheme = GameTheme.wooden;
+                });
+                Navigator.of(context).pop();
+              },
+              child: Text('Neon Theme'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  currentTheme = GameTheme.classic;
+                });
+                Navigator.of(context).pop();
+              },
+              child: Text('Classic Theme'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
